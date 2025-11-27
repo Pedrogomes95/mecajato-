@@ -1,0 +1,41 @@
+{% load static %}
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'general/css/login.css' %}">
+    <title>Registrar - Mecajato</title>
+  </head>
+  <body class="login-page">
+    <div class="login-wrapper">
+      <div class="login-left">
+        <div class="brand">MECAJATO</div>
+        <h2 class="lead">Crie sua conta</h2>
+        <p class="sub">Registre-se para gerenciar seus clientes e serviços.</p>
+      </div>
+      <div class="login-right">
+        <div class="login-card shadow-sm">
+          <h3 class="mb-3">Criar conta</h3>
+          <form method="post" action="{% url 'register' %}">
+            {% csrf_token %}
+            {# Render form fields; inputs will be styled via CSS selectors #}
+            {% for field in form %}
+              <div class="form-group">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.help_text %}<small class="form-text text-muted">{{ field.help_text }}</small>{% endif %}
+                {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+              </div>
+            {% endfor %}
+            <div class="d-flex justify-content-between align-items-center">
+              <button class="btn btn-primary" type="submit">Registrar</button>
+              <a href="{% url 'login' %}" class="btn btn-link">Já tenho conta</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

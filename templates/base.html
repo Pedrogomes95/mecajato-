@@ -1,0 +1,104 @@
+{% load static %}
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    {# SEO defaults: allow templates to override title/description/keywords/canonical #}
+    <meta name="description" content="{% block meta_description %}{{ SITE_DESCRIPTION }}{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}{{ SITE_KEYWORDS }}{% endblock %}">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{% block canonical %}{{ request.build_absolute_uri }}{% endblock %}">
+
+    {# Open Graph / Twitter Card defaults (can be overridden in specific templates) #}
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{% block og_title %}{{ SITE_NAME }}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{{ SITE_DESCRIPTION }}{% endblock %}">
+    <meta property="og:url" content="{% block og_url %}{{ request.build_absolute_uri }}{% endblock %}">
+    <meta property="og:site_name" content="{{ SITE_NAME }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="{{ SITE_TWITTER }}">
+    <meta property="og:image" content="{% block og_image %}{{ SITE_OG_IMAGE }}{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}{{ SITE_OG_IMAGE }}{% endblock %}">
+    <meta name="twitter:title" content="{% block twitter_title %}{{ SITE_NAME }}{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}{{ SITE_DESCRIPTION }}{% endblock %}">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'general/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'general/css/general.css' %}">
+    <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+    {% block head %}{% endblock %}
+
+    <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
+
+    {# Basic JSON-LD Organization structured data #}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "{{ SITE_NAME }}",
+      "url": "{{ SITE_URL }}",
+      "logo": "{{ SITE_OG_IMAGE }}"
+    }
+    </script>
+  </head>
+  <body>
+    
+    <div class="sidebar">
+        <div class="logo-details">
+            <div class="logo_name">MECAJATO</div>
+            <i class='bx bx-menu' id="btn" ></i>
+        </div>
+        <ul class="nav-list">
+          <li>
+            <a href="#">
+              <i class='bx bx-grid-alt'></i>
+              <span class="links_name">Página inicial</span>
+            </a>
+            <span class="tooltip">Página inicial</span>
+          </li>
+          <li>
+          <a href="{% url 'clientes' %}">
+            <i class='bx bx-user' ></i>
+            <span class="links_name">Clientes</span>
+          </a>
+          <span class="tooltip">Clientes</span>
+        </li>
+        <li>
+          <a href="{% url 'listar_servico' %}">
+            <i class='bx bx-chat' ></i>
+            <span class="links_name">Serviços</span>
+          </a>
+          <span class="tooltip">Serviços</span>
+        </li>
+        </ul>
+      </div>
+      
+      <section class="home-section">
+          {% if messages %}
+            <div class="container mt-3">
+              {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible" role="alert">
+                  {{ message }}
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+          {% block dashboard %}
+          {% endblock %}
+
+      </section>
+
+    {% block body %}
+    {% endblock %}
+    <script src="{% static 'general/js/base.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'clientes/js/clientes.js' %}"></script>
+  </body>
+</html>

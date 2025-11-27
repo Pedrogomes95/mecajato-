@@ -1,0 +1,65 @@
+/* Clientes page styles (restored original) */
+.client-list{
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+.client-card{
+	display: flex;
+	gap: 12px;
+	background-color: #fff;
+	border-radius: 8px;
+	padding: 12px;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+	align-items: center;
+}
+.client-card .avatar{
+	width: 64px;
+	height: 64px;
+	background: #e9ecef;
+	border-radius: 8px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 600;
+	color: #6c757d;
+}
+.client-card .info{
+	flex: 1;
+}
+.client-card .info h5{
+	margin: 0 0 4px 0;
+	font-size: 16px;
+}
+.client-card .info small{
+	color: #6c757d;
+}
+.client-actions{
+	display: flex;
+	gap: 8px;
+}
+.client-actions .btn{
+	padding: 6px 10px;
+}
+/* responsive */
+@media (max-width: 600px){
+	.client-card{flex-direction: column;align-items: stretch}
+	.client-card .avatar{width:100%;height:72px;border-radius:6px}
+}
+
+/* Client cards and controls have white background — force dark text there */
+.client-card,
+.client-card .info h5,
+.client-card .info small,
+.home-section .card,
+.home-section .list-group-item,
+.home-section .form-control {
+	color: #000 !important;
+}
+
+/* Elements that live on the dark page background (not on white cards) should be white */
+.home-section p,
+.home-section label,
+.home-section .text {
+	color: #fff !important;
+}

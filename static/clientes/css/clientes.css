@@ -1,0 +1,96 @@
+.card-dashboard{
+
+    background-color: var(--main-color);
+    width: 50%;
+    margin-left: 10px;
+    margin-top: 40px;
+    text-align: center;
+    padding: 20px;
+    cursor: pointer;
+
+}
+
+.text-card{
+
+    font-size: 25px;
+
+}
+
+.btn-add-carros{
+
+    background-color: var(--contrast-color);
+    padding: 5px;
+    font-weight: bold;
+    cursor: pointer;
+
+}
+
+.btn-principal{
+    color:white;
+    border: none;
+    background-color: var(--dark-color);
+    padding: 5px;
+    font-size: 30px;
+}
+
+#att_cliente{
+
+    display: none;
+}
+
+#form-att-cliente{
+    display: none;
+
+}
+
+/* Forçar nome e e-mail dos clientes para cor preta na listagem */
+.home-section .list-group-item,
+.home-section .list-group-item * {
+    color: #000 !important;
+}
+
+/* Modal inputs: garantir texto visível (preto) e fundo branco */
+.modal .form-control {
+    color: #000 !important;
+    background-color: #fff !important;
+}
+.modal .form-control::placeholder { color: #888 !important; }
+.modal .modal-title, .modal .modal-body, .modal .modal-footer {
+    color: #000 !important;
+}
+
+/* Garantir que modal fique acima de outros elementos da página */
+.modal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    z-index: 2001 !important;
+    pointer-events: auto !important;
+}
+.modal-backdrop {
+    z-index: 2000 !important;
+}
+
+/* Card header and body should be dark to contrast the page background */
+/* card header/body color overrides removed to revert to previous styles */
+
+/* Elements that have white backgrounds inside the dark .home-section should use dark text */
+.home-section .card,
+.home-section .client-card,
+.home-section .list-group-item,
+.home-section .form-control,
+.home-section .card .card-header h5,
+.home-section .card .card-header small,
+.home-section .card .card-body p,
+.home-section .card .card-body h6,
+.client-card .info h5,
+.client-card .info small {
+    color: #000 !important;
+}
+
+/* Page-level labels/paragraphs on the dark background should be white */
+.home-section p,
+.home-section label,
+.home-section .text {
+    color: #fff !important;
+}

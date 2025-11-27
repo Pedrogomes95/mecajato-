@@ -1,0 +1,39 @@
+:root{
+	--main-color: #23272b;
+	--accent-color: #1abc9c;
+	--dark-color: #1f2a37;
+}
+
+html, body{
+	height: 100%;
+}
+
+body{
+	background: #f5f6fa;
+	color: #222;
+}
+
+.container{
+	padding: 24px;
+}
+
+.card{
+	background: #fff;
+	border-radius: 8px;
+	padding: 18px;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.btn-primary{
+	background: var(--accent-color);
+	border: none;
+}
+
+.text-muted{
+	color: #6c757d;
+}
+
+/* small responsive tweaks */
+@media (max-width: 768px){
+	.container{padding:12px}
+}

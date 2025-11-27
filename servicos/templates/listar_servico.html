@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'clientes/css/clientes.css' %}">
+    <link rel="stylesheet" href="{% static 'servicos/css/listar_servico.css' %}">
+{% endblock %}
+
+{% block dashboard %}
+    <br>
+    <br>
+        <div class="container-fluid distanciamento">
+                <div class="table-responsive">
+                <table class="table table-dark table-striped table-hover">
+        <thead>
+            <tr>
+            <th scope="col">Identificador</th>
+            <th scope="col">Título</th>
+                        <th scope="col">Início</th>
+            <th scope="col">Cliente</th>
+            <th scope="col">Status</th>
+            <th scope="col">Preço total</th>
+            </tr>
+        </thead>
+                <tbody>
+                        {% if servicos.object_list|length %}
+                            {% for servico in servicos.object_list %}
+                                <tr>
+                                        <th scope="row"><a href="{% url 'servico' servico.identificador %}">{{ servico.identificador }}</a></th>
+                                        <td>{{ servico.titulo }}</td>
+                                        <td>{% if servico.data_inicio %}{{ servico.data_inicio|date:"d/m/Y" }}{% else %}-{% endif %}</td>
+                                        <td>{{ servico.cliente }}</td>
+                                        <td>
+                                            {% if servico.finalizado %}
+                                                <span class="badge badge-success">Finalizado</span>
+                                            {% else %}
+                                                <span class="badge badge-info">Em manutenção</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>R$ {{ servico.preco_total|floatformat:2 }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">Nenhum serviço encontrado.</td>
+                            </tr>
+                        {% endif %}
+        </tbody>
+        </table>
+                </div>
+                {# Pagination controls #}
+                {% if paginator and paginator.num_pages > 1 %}
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-center mt-3">
+                        {% if servicos.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ servicos.previous_page_number }}" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+                        {% endif %}
+
+                        {% for num in servicos.paginator.page_range %}
+                            {% if servicos.number == num %}
+                                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                            {% else %}
+                                <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if servicos.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ servicos.next_page_number }}" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+    </div>
+{% endblock %}

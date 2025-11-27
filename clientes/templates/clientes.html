@@ -1,0 +1,333 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'clientes/css/clientes.css' %}">
+{% endblock %}
+
+{% block dashboard %}
+    <div class="container">
+        <div class="row">
+            <div onclick="window.location.href='{% url 'novo_cliente' %}'" class="col-md card-dashboard">
+                <p class="text-card">Adicionar clientes</p>
+            </div>
+
+            <div onclick="exibir_form('2')" class="col-md card-dashboard">
+                <p class="text-card">Atualizar clientes</p>
+            </div>
+
+        </div>
+
+
+            <div id="att_cliente">
+                <p></p>
+                <select id="cliente-select"  onchange="dados_cliente()" class="form-control">
+                    {% for cliente in clientes %}
+                    <option value="{{cliente.id}}">{{cliente.nome}}</option>
+                    {% endfor %}
+                </select>
+                <br>
+                <hr>
+
+                <div id="form-att-cliente">
+                    {% csrf_token %}
+                    <script>
+                        (function(){
+                            try{
+                                // Se o cookie csrftoken não existir, inicializa a partir do input gerado pelo template
+                                function getCookie(name){
+                                    var v = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+                                    return v ? v.pop() : null;
+                                }
+                                if (!getCookie('csrftoken')){
+                                    var el = document.querySelector('[name=csrfmiddlewaretoken]');
+                                    if (el && el.value){
+                                        document.cookie = 'csrftoken=' + encodeURIComponent(el.value) + '; path=/';
+                                        console.log('csrftoken cookie set from csrf input');
+                                    }
+                                }
+                            }catch(e){ console.warn('csrf cookie init failed', e); }
+                        })();
+                    </script>
+                    <input type="hidden" id="id">
+                    <p>Nome:</p>
+                    <input id="nome" type="text" class='form-control'>
+                    <p>Sobrenome:</p>
+                    <input id="sobrenome" type="text" class='form-control'>
+                    <p>E-mail:</p>
+                    <input id="email" type="text" class='form-control'>
+                    <p>CPF:</p>
+                    <input id="cpf" type="text" class='form-control'>
+                    <br>
+                    <input onclick="update_cliente()"  type="submit" value="salvar" class="btn btn-success" > 
+                    <button type="button" class="btn btn-outline-primary" onclick="openCarModal('create', null, document.getElementById('cliente-select').value);">Adicionar carro</button>
+                    <hr style="background-color: gray;">
+                    <h2>Carros</h2>
+                    <div id="carros">
+                        
+                    </div>
+                </div>
+                
+            </div>
+
+    </div>
+    <hr>
+    <section class="container mt-4">
+        <h2>Clientes cadastrados</h2>
+        {% if clientes %}
+            <div>
+                {% for cliente in clientes %}
+                    <div class="card mb-3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-0">{{ cliente.nome }} {{ cliente.sobrenome }}</h5>
+                                <small class="text-muted">CPF: {{ cliente.cpf }}</small>
+                            </div>
+                            <div>
+                                <a class="btn btn-sm btn-primary mr-1" href="#" onclick="openEditModal({{ cliente.id }});return false;">Editar</a>
+                                <a class="btn btn-sm btn-secondary mr-1" href="#" onclick="openCarModal('create', null, {{ cliente.id }});return false;">Adicionar carro</a>
+                                <a class="btn btn-sm btn-danger" href="{% url 'excluir_cliente' cliente.id %}" onclick="return confirm('Remover cliente?');">Remover</a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-2">E-mail: {{ cliente.email }}</p>
+                            <h6>Carros</h6>
+                            {% if cliente.carro_set.all %}
+                                <ul class="list-group list-group-flush">
+                                {% for carro in cliente.carro_set.all %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center" id="car-{{ carro.id }}" data-carro="{{ carro.carro|escape }}" data-placa="{{ carro.placa|escape }}" data-ano="{{ carro.ano }}">
+                                        <div>{{ carro.carro }} — Placa: {{ carro.placa }} — Ano: {{ carro.ano }}</div>
+                                        <div>
+                                            <a class="btn btn-sm btn-outline-secondary mr-1" href="#" onclick="openCarModal('edit', {{ carro.id }}, {{ cliente.id }});return false;">Editar</a>
+                                            <a class="btn btn-sm btn-outline-danger" href="#" onclick="deleteCarAjax({{ carro.id }});return false;">Remover</a>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-muted">Sem carros cadastrados</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+                        <nav aria-label="Page navigation" class="mt-3">
+                            <ul class="pagination">
+                                {% if clientes.has_previous %}
+                                    <li class="page-item"><a class="page-link" href="?page={{ clientes.previous_page_number }}&order={{ order }}">Anterior</a></li>
+                                {% else %}
+                                    <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+                                {% endif %}
+                                {% for num in paginator.page_range %}
+                                    {% if num == clientes.number %}
+                                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                                    {% else %}
+                                        <li class="page-item"><a class="page-link" href="?page={{ num }}&order={{ order }}">{{ num }}</a></li>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if clientes.has_next %}
+                                    <li class="page-item"><a class="page-link" href="?page={{ clientes.next_page_number }}&order={{ order }}">Próxima</a></li>
+                                {% else %}
+                                    <li class="page-item disabled"><span class="page-link">Próxima</span></li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+        {% else %}
+            <p>Nenhum cliente cadastrado.</p>
+        {% endif %}
+    </section>
+        <!-- Edit modal -->
+        <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel">Editar Cliente</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editForm">
+                            <input type="hidden" id="edit-id">
+                            <div class="form-group">
+                                <label>Nome</label>
+                                <input id="edit-nome" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Sobrenome</label>
+                                <input id="edit-sobrenome" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>E-mail</label>
+                                <input id="edit-email" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>CPF</label>
+                                <input id="edit-cpf" class="form-control">
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="submitEdit()">Salvar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+                <!-- Car Modal -->
+                <div class="modal fade" id="carModal" tabindex="-1" role="dialog" aria-labelledby="carModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="carModalLabel">Adicionar/Editar Carro</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="carForm">
+                                    <input type="hidden" id="car-edit-cliente-id" value="">
+                                    <div class="form-group">
+                                        <label>Título</label>
+                                        <input id="car-title" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Placa</label>
+                                        <input id="car-placa" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Ano</label>
+                                        <input id="car-ano" class="form-control" type="number">
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                                <button type="button" id="car-save-btn" class="btn btn-primary" onclick="submitCarModal()">Salvar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+            // Car editing helpers
+            // Car modal handling (create/edit)
+            let carModalMode = 'create';
+            let carModalCarId = null;
+
+            function openCarModal(mode, carId, clienteId){
+                carModalMode = mode;
+                carModalCarId = carId || null;
+                document.getElementById('car-edit-cliente-id').value = clienteId || '';
+                if (mode === 'edit'){
+                    const li = document.getElementById('car-' + carId);
+                    const carro = li.dataset.carro || '';
+                    const placa = li.dataset.placa || '';
+                    const ano = li.dataset.ano || '';
+                    document.getElementById('car-title').value = carro;
+                    document.getElementById('car-placa').value = placa;
+                    document.getElementById('car-ano').value = ano;
+                    document.getElementById('carModalLabel').textContent = 'Editar Carro';
+                    document.getElementById('car-save-btn').textContent = 'Salvar alterações';
+                } else {
+                    document.getElementById('car-title').value = '';
+                    document.getElementById('car-placa').value = '';
+                    document.getElementById('car-ano').value = '';
+                    document.getElementById('carModalLabel').textContent = 'Adicionar Carro';
+                    document.getElementById('car-save-btn').textContent = 'Adicionar';
+                }
+                $('#carModal').appendTo('body').modal('show');
+            }
+
+            function submitCarModal(){
+                const clienteId = document.getElementById('car-edit-cliente-id').value;
+                const carro = document.getElementById('car-title').value;
+                const placa = document.getElementById('car-placa').value;
+                const ano = document.getElementById('car-ano').value;
+                const csrftoken = getCookie('csrftoken');
+                if (!clienteId){
+                    alert('ID do cliente não informado. Abra o modal a partir do cliente desejado.');
+                    return;
+                }
+                if (carModalMode === 'edit' && carModalCarId){
+                    fetch(`/clientes/update_carro/${carModalCarId}`, {
+                        method: 'POST',
+                        headers: {'X-CSRFToken': csrftoken, 'Content-Type': 'application/x-www-form-urlencoded'},
+                        body: new URLSearchParams({carro: carro, placa: placa, ano: ano})
+                    }).then(r => r.text()).then(() => location.reload());
+                } else {
+                    fetch('{% url "criar_carro" %}', {
+                        method: 'POST',
+                        headers: {'X-CSRFToken': csrftoken, 'Content-Type': 'application/x-www-form-urlencoded'},
+                        body: new URLSearchParams({cliente_id: clienteId, carro: carro, placa: placa, ano: ano})
+                    }).then(r => r.json()).then(data => {
+                        if (data.status === '200') location.reload(); else alert('Erro ao criar carro');
+                    });
+                }
+            }
+
+            function deleteCarAjax(carId){
+                if (!confirm('Remover este carro?')) return;
+                const csrftoken = getCookie('csrftoken');
+                fetch('{% url "excluir_carro_ajax" %}', {
+                    method: 'POST',
+                    headers: {'X-CSRFToken': csrftoken, 'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: new URLSearchParams({id: carId})
+                }).then(r => r.json()).then(data => {
+                    if (data.status === '200'){
+                        const el = document.getElementById('car-' + carId);
+                        if (el) el.remove();
+                    } else {
+                        alert('Erro ao remover carro');
+                    }
+                });
+            }
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            function openEditModal(id) {
+                const csrftoken = getCookie('csrftoken');
+                fetch('{% url "atualiza_cliente" %}', {
+                    method: 'POST',
+                    headers: {'X-CSRFToken': csrftoken, 'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: new URLSearchParams({'id_cliente': id})
+                }).then(r => r.json()).then(data => {
+                    document.getElementById('edit-id').value = data.cliente_id;
+                    document.getElementById('edit-nome').value = data.cliente.nome;
+                    document.getElementById('edit-sobrenome').value = data.cliente.sobrenome;
+                    document.getElementById('edit-email').value = data.cliente.email;
+                    document.getElementById('edit-cpf').value = data.cliente.cpf;
+                    $('#editModal').appendTo('body').modal('show');
+                });
+            }
+
+            function submitEdit(){
+                const id = document.getElementById('edit-id').value;
+                const payload = {
+                    nome: document.getElementById('edit-nome').value,
+                    sobrenome: document.getElementById('edit-sobrenome').value,
+                    email: document.getElementById('edit-email').value,
+                    cpf: document.getElementById('edit-cpf').value
+                };
+                const csrftoken = getCookie('csrftoken');
+                fetch(`/clientes/update_cliente/${id}`, {
+                    method: 'POST',
+                    headers: {'X-CSRFToken': csrftoken, 'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                }).then(r => r.json()).then(data => {
+                    if (data.status === '200'){
+                        // reload to show updated data and flash message
+                        location.reload();
+                    } else {
+                        alert('Erro ao atualizar cliente');
+                    }
+                });
+            }
+        </script>
+{% endblock %}
